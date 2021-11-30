@@ -30,6 +30,6 @@ app.use(bodyParser.urlencoded({
 
 routes(app);
 
-app.listen('3000', () =>{
-    console.log('Listening on port 3000');
+app.listen('3306', () =>{
+    console.log('Listening on port 3306');
 })
