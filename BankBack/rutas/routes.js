@@ -1,11 +1,20 @@
+require('dotenv').config();
 // MYSQL
 const mysql = require('mysql')
 const db = mysql.createConnection({
-host: process.env.DATABASE_URL , // "",
-user: process.env.DATABASE_USER , // "",
-password: process.env.DATABASE_PASS , // "",
-database: process.env.DATABASE_DB  // "" 
+host: process.env.DATABASE_HOST ,//"database-bankapp.c1rcdusoj7dz.us-east-1.rds.amazonaws.com",
+user: process.env.DATABASE_USER  ,//"admin",
+password: process.env.DATABASE_PASS ,//"ionic123",
+database: process.env.DATABASE_DB //"db_banco" 
 })
+
+db.connect(function(err) {
+    if (err) {
+        console.log("Database connection failed:" + err.stack);
+        return;
+    }
+    console.log("Connected!");
+});
 
 module.exports = db;
 
@@ -97,6 +106,80 @@ const router = app => {
                         };
                         res.status(404).send(respuesta);
                     }
+                }
+            });   
+    })
+
+    //*************  TABLA CUENTA  *******************/
+
+    //crear cuenta  -- falta inner join en propietario entre cuenta y usuario
+    app.post('/api/v1/cuenta', async(req, res) => {
+        const idCuenta = req.body.idCuenta;
+        const tipoCuenta = req.body.tipoCuenta;
+        const montoActual = req.body.montoActual;
+        const correo = req.body.correo;
+        
+        db.query("INSERT INTO Cuenta (idCuenta,TipoCuenta,MontoActual,Propietario) VALUES (?,?,?,?)"
+                ,[idCuenta,tipoCuenta,montoActual,correo],
+                (err,result)=>{
+                    if(err) {
+                        console.log(err)
+                        res.sendStatus(404)
+                    } else {
+                        console.log(result)
+                        res.sendStatus(201)
+                    }
+        });
+    })  
+
+    //actualizar datos del cuenta --Modificar campos de las cuentas Origen y Destino
+    app.put('/api/v1/cuenta/:idCuenta', async(req, res) => {
+
+        const montoActual = req.body.montoActual;
+        
+        db.query("UPDATE Cuenta SET MontoActual = ? WHERE idCuenta = ?"
+                ,[montoActual,idCuenta], 
+        (err,result)=>{
+            if(err) {
+                console.log(err)
+                result.sendStatus(404)
+            } else {
+                console.log(result)
+                res.sendStatus(204)
+            }
+        });
+    })
+
+    //*************  TABLA RELACIONESCUENTA  *******************/
+
+    //crear relacioncuenta -- y viseversa la cuenta
+    app.post('/api/v1/relacionCuenta', async(req, res) => {
+        const cuentaOrigen = req.body.cuentaOrigen;
+        const cuentaDestino = req.body.cuentaDestino;
+        
+        db.query("INSERT INTO RelacionesCuenta (CuentaOrigen,CuentaDestino) VALUES (?,?)"
+                ,[cuentaOrigen,cuentaDestino],
+                (err,result)=>{
+                    if(err) {
+                        console.log(err)
+                        res.sendStatus(404)
+                    } else {
+                        console.log(result)
+                        res.sendStatus(201)
+                    }
+        });
+    })  
+
+    //obtener listado de cuentas amigas de una cuenta especifica
+    app.get('/api/v1/relacionCuenta/:cuentaOrigen', async(req, res) => {
+        const cuentaOrigen = req.params.cuentaOrigen;
+         db.query("SELECT CuentaDestino FROM RelacionesCuenta WHERE cuentaOrigen = ?", [cuentaOrigen], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err)
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
                 }
             });   
     })
