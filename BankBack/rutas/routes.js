@@ -2,10 +2,10 @@ require('dotenv').config();
 // MYSQL
 const mysql = require('mysql')
 const db = mysql.createConnection({
-host: process.env.DATABASE_HOST ,//"database-bankapp.c1rcdusoj7dz.us-east-1.rds.amazonaws.com",
-user: process.env.DATABASE_USER  ,//"admin",
-password: process.env.DATABASE_PASS ,//"ionic123",
-database: process.env.DATABASE_DB //"db_banco" 
+host: process.env.DATABASE_HOST ,
+user: process.env.DATABASE_USER  ,
+password: process.env.DATABASE_PASS ,
+database: process.env.DATABASE_DB 
 })
 
 db.connect(function(err) {
@@ -84,28 +84,13 @@ const router = app => {
     //verificar correo y contraseña --login
     app.get('/api/v1/usuario/:correo', async(req, res) => {
         const correo = req.params.correo;
-        const contraseña = req.body.contraseña;
-         db.query("SELECT AES_DECRYPT(Contraseña,?) FROM Usuario WHERE correo = ?", [process.env.DATABASE_CLAVE,correo], 
+         db.query("SELECT CONVERT(AES_DECRYPT(Contraseña,?) USING utf8) as 'password' FROM Usuario WHERE correo = ?", [process.env.DATABASE_CLAVE,correo], 
             (err,result)=>{
                 if(err) {
-                    console.log(err)
+                    console.log(err);
                     result.sendStatus(404)
                 } else {
-                    if (result == contraseña) {
-                        respuesta = {
-                            error: true, 
-                            codigo: 200, 
-                            mensaje: 'Correcto'
-                        };
-                        res.status(200).send(respuesta);
-                    }else{
-                        respuesta = {
-                            error: true, 
-                            codigo: 404, 
-                            mensaje: 'Incorrecto'
-                        };
-                        res.status(404).send(respuesta);
-                    }
+                    res.status(200).send(result);
                 }
             });   
     })
