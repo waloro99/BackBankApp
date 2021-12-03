@@ -184,6 +184,79 @@ const router = app => {
             });   
     })
    
+    //*************  TABLA TRANSFERENCIAS  *******************/
+
+    //crear trasferencia -- y viseversa la cuenta
+    app.post('/api/v1/tranferencia', async(req, res) => {
+        const monto = req.body.monto;
+        const accion = req.body.accion;
+        const cuentaOrigen = req.body.cuentaOrigen;
+        const cuentaDestino = req.body.cuentaDestino;
+        
+        db.query("INSERT INTO Transferencias (Monto,Accion,CuentaOrigen,CuentaDestino) VALUES (?,?,?,?)"
+                ,[monto,accion,cuentaOrigen,cuentaDestino],
+                (err,result)=>{
+                    if(err) {
+                        console.log(err)
+                        res.sendStatus(404)
+                    } else {
+                        console.log(result)
+                        res.sendStatus(201)
+                    }
+        });
+    })  
+
+    //*************  TABLA HISTORIAL  *******************/
+
+    //aplica para crear usuario, deshabilitar usuario, habilitar usuario, tambien si se realiza una relacion cuenta
+    app.post('/api/v1/historial', async(req, res) => {
+        const tipoTransaccion = req.body.tipoTransaccion;
+        const fechaYHora = req.body.fechaYHora;
+        const descripcion = req.body.descripcion;
+        
+        db.query("INSERT INTO Historial(TipoTransaccion,FechaYHora,Descripcion) VALUES (?,?,?)"
+                ,[tipoTransaccion,fechaYHora,descripcion],
+                (err,result)=>{
+                    if(err) {
+                        console.log(err)
+                        res.sendStatus(404)
+                    } else {
+                        console.log(result)
+                        res.sendStatus(201)
+                    }
+        });
+    })
+
+    //aplica para guardar transferencia
+    app.post('/api/v1/historial2', async(req, res) => {
+        const fechaYHora = req.body.fechaYHora;
+        const transferencia = req.body.transferencia;
+        
+        db.query("INSERT INTO Historial(FechaYHora,Transferencia) VALUES (?,?)"
+                ,[fechaYHora,transferencia],
+                (err,result)=>{
+                    if(err) {
+                        console.log(err)
+                        res.sendStatus(404)
+                    } else {
+                        console.log(result)
+                        res.sendStatus(201)
+                    }
+        });
+    })
+
+    //obtener historial global
+    app.get('/api/v1/historial', async(req, res) => {
+         db.query("SELECT * FROM Historial", [], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err)
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
 
     //*************  NO ENCONTRO URL  *******************/
 
