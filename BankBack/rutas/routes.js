@@ -135,6 +135,21 @@ const router = app => {
         });
     })
 
+    //obtiene todas las cuentas de un usuario
+    app.get('/api/v1/cuenta/:correo', async(req, res) => {
+        const correo = req.params.correo;
+         db.query("SELECT c.idCuenta , c.TipoCuenta , c.MontoActual , c.Propietario FROM Cuenta c INNER JOIN Usuario u ON c.Propietario = u.idUsuario WHERE u.Correo = ?",
+            [correo], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err);
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+
     //*************  TABLA RELACIONESCUENTA  *******************/
 
     //crear relacioncuenta -- y viseversa la cuenta
