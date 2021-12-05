@@ -258,6 +258,25 @@ const router = app => {
             });   
     })
 
+    //obtener historial de una persona
+    app.get('/api/v1/historial/:correo', async(req, res) => {
+        const correo = req.params.correo;
+         db.query("SELECT h.FechaYHora , t.Monto , t.CuentaOrigen , t.CuentaDestino , a.NombreAccion FROM Historial  h " +
+                    "INNER JOIN Transferencias t ON h.Transferencia = t.idTransferencias " +
+                    "INNER JOIN Acciones a ON t.Accion = a.idAcciones " +
+                    "INNER JOIN Cuenta c ON t.CuentaOrigen = c.idCuenta " +
+                    "INNER JOIN Usuario u ON c.Propietario = u.idUsuario " +
+                    "WHERE u.Correo = ?;", [correo], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err);
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+
     //*************  NO ENCONTRO URL  *******************/
 
     app.use(function(req, res, next) {
