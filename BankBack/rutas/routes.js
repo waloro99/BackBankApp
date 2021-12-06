@@ -95,6 +95,35 @@ const router = app => {
             });   
     })
 
+    //Obtener lista de usuarios
+    app.get('/api/v1/usuario', async(req, res) => {
+        const correo = req.params.correo;
+         db.query("SELECT * FROM Usuario", [correo], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err);
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+
+    //obtiene informacion completa del usuario
+    app.get('/api/v1/usuarioInfo/:correo', async(req, res) => {
+        const correo = req.params.correo;
+         db.query("SELECT idUsuario, Correo, CONVERT(AES_DECRYPT(Contraseña,?) USING utf8) as 'Contraseña', Rol, Disponible, Direccion, DPI, FechaNacimiento, Nombre, Telefono FROM Usuario WHERE Correo = ?;"
+         , [process.env.DATABASE_CLAVE,correo], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err);
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+
     //*************  TABLA CUENTA  *******************/
 
     //crear cuenta  -- falta inner join en propietario entre cuenta y usuario
