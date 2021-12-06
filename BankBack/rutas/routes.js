@@ -274,9 +274,10 @@ const router = app => {
         });
     })
 
-    //obtener historial global
+    //obtener historial globa de movimiento
     app.get('/api/v1/historial', async(req, res) => {
-         db.query("SELECT * FROM Historial", [], 
+         db.query("SELECT FechaYHora , TipoTransaccion , Descripcion FROM Historial " +
+                  "WHERE TipoTransaccion IS NOT NULL;", [], 
             (err,result)=>{
                 if(err) {
                     console.log(err)
@@ -286,6 +287,23 @@ const router = app => {
                 }
             });   
     })
+
+    //obtener historial global de transacciones
+    app.get('/api/v1/historial2', async(req, res) => {
+        db.query("SELECT h.FechaYHora , t.Monto , t.CuentaOrigen , t.CuentaDestino , a.NombreAccion FROM Historial  h " +
+                    "INNER JOIN Transferencias t ON h.Transferencia = t.idTransferencias " +
+                    "INNER JOIN Acciones a ON t.Accion = a.idAcciones " +
+                    "INNER JOIN Cuenta c ON t.CuentaOrigen = c.idCuenta " +
+                    "INNER JOIN Usuario u ON c.Propietario = u.idUsuario ", [], 
+           (err,result)=>{
+               if(err) {
+                   console.log(err)
+                   result.sendStatus(404)
+               } else {
+                   res.status(200).send(result);
+               }
+           });   
+   })
 
     //obtener historial de una persona
     app.get('/api/v1/historial/:correo', async(req, res) => {
