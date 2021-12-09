@@ -235,6 +235,22 @@ const router = app => {
         });
     })  
 
+    //Obtener ultima transferencia
+    app.get('/api/v1/tranferencia', async(req, res) => {
+         db.query("SELECT idTransferencias " +
+                  "FROM Transferencias " +
+                  "ORDER by idTransferencias DESC LIMIT 1;", [], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err);
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+    
+
     //*************  TABLA HISTORIAL  *******************/
 
     //aplica para crear usuario, deshabilitar usuario, habilitar usuario, tambien si se realiza una relacion cuenta
