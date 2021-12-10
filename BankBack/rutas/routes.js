@@ -212,6 +212,21 @@ const router = app => {
                 });   
         })
 
+    //obtener listado de todas las cuentas amigas de una cuenta especifica
+    app.get('/api/v1/cuentaDisponible', async(req, res) => {
+        const idCuenta = req.params.idCuenta;
+         db.query("SELECT u.Disponible , c.idCuenta  FROM Cuenta c " +
+                    "INNER JOIN Usuario u ON c.Propietario = u.idUsuario;", [idCuenta], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err)
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+
     //*************  TABLA RELACIONESCUENTA  *******************/
 
     //crear relacioncuenta -- y viseversa la cuenta
