@@ -148,11 +148,10 @@ const router = app => {
 
     //actualizar datos del cuenta --Modificar campos de las cuentas Origen y Destino
     app.put('/api/v1/cuenta/:idCuenta', async(req, res) => {
-
+        const idCuenta = req.params.idCuenta;
         const montoActual = req.body.montoActual;
         
-        db.query("UPDATE Cuenta SET MontoActual = ? WHERE idCuenta = ?"
-                ,[montoActual,idCuenta], 
+        db.query("UPDATE Cuenta SET MontoActual = ? WHERE idCuenta = ?",[montoActual,idCuenta], 
         (err,result)=>{
             if(err) {
                 console.log(err)
@@ -276,9 +275,10 @@ const router = app => {
     app.post('/api/v1/historial2', async(req, res) => {
         const fechaYHora = req.body.fechaYHora;
         const transferencia = req.body.transferencia;
+        const descripcion = req.body.descripcion
         
-        db.query("INSERT INTO Historial(FechaYHora,Transferencia) VALUES (?,?)"
-                ,[fechaYHora,transferencia],
+        db.query("INSERT INTO Historial(FechaYHora,Transferencia,Descripcion) VALUES (?,?,?)"
+                ,[fechaYHora,transferencia,descripcion],
                 (err,result)=>{
                     if(err) {
                         console.log(err)
