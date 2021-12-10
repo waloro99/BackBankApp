@@ -32,18 +32,18 @@ const router = app => {
 
     //crear usuario
     app.post('/api/v1/usuario', async(req, res) => {
-        const correo = req.body.correo;
-        const contraseña = req.body.contraseña;
-        const rol = req.body.rol;
-        const disponible = req.body.disponible;
-        const direccion = req.body.direccion;
-        const dpi = req.body.dpi;
-        const fechaNacimiento = req.body.fechaNacimiento;
-        const nombre = req.body.nombre;
-        const telefono = req.body.telefono;
+        const Correo = req.body.Correo;
+        const Contrasena = req.body.Contrasena;
+        const Rol = req.body.Rol;
+        const Disponible = req.body.Disponible;
+        const Direccion = req.body.Direccion;
+        const DPI = req.body.DPI;
+        const FechaNacimiento = req.body.FechaNacimiento;
+        const Nombre = req.body.Nombre;
+        const Telefono = req.body.Telefono;
         
         db.query("INSERT INTO Usuario (Correo, Contraseña, Rol, Disponible, Direccion, DPI, FechaNacimiento, Nombre, Telefono) VALUES (?,AES_ENCRYPT(?,?),?,?,?,?,?,?,?)"
-                ,[correo,contraseña,process.env.DATABASE_CLAVE,rol,disponible,direccion,dpi,fechaNacimiento,nombre,telefono],
+                ,[Correo,Contrasena,process.env.DATABASE_CLAVE,Rol,Disponible,Direccion,DPI,FechaNacimiento,Nombre,Telefono],
                 (err,result)=>{
                     if(err) {
                         console.log(err)
@@ -98,7 +98,7 @@ const router = app => {
     //Obtener lista de usuarios
     app.get('/api/v1/usuario', async(req, res) => {
         const correo = req.params.correo;
-         db.query("SELECT * FROM Usuario", [correo], 
+         db.query("SELECT * FROM Usuario WHERE Correo <> 'admin@correo.com'", [correo], 
             (err,result)=>{
                 if(err) {
                     console.log(err);
@@ -124,17 +124,32 @@ const router = app => {
             });   
     })
 
+    //Obtener ultima transferencia
+    app.get('/api/v1/usuarioId', async(req, res) => {
+        db.query("SELECT idUsuario " +
+                 "FROM Usuario " +
+                 "ORDER by idUsuario DESC LIMIT 1;", [], 
+           (err,result)=>{
+               if(err) {
+                   console.log(err);
+                   result.sendStatus(404)
+               } else {
+                   res.status(200).send(result);
+               }
+           });   
+   })
+
     //*************  TABLA CUENTA  *******************/
 
     //crear cuenta  -- falta inner join en propietario entre cuenta y usuario
     app.post('/api/v1/cuenta', async(req, res) => {
         const idCuenta = req.body.idCuenta;
-        const tipoCuenta = req.body.tipoCuenta;
-        const montoActual = req.body.montoActual;
-        const correo = req.body.correo;
+        const TipoCuenta = req.body.TipoCuenta;
+        const MontoActual = req.body.MontoActual;
+        const Propietario = req.body.Propietario;
         
         db.query("INSERT INTO Cuenta (idCuenta,TipoCuenta,MontoActual,Propietario) VALUES (?,?,?,?)"
-                ,[idCuenta,tipoCuenta,montoActual,correo],
+                ,[idCuenta,TipoCuenta,MontoActual,Propietario],
                 (err,result)=>{
                     if(err) {
                         console.log(err)
