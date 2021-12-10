@@ -346,7 +346,7 @@ const router = app => {
     //obtener historial globa de movimiento
     app.get('/api/v1/historial', async(req, res) => {
          db.query("SELECT FechaYHora , TipoTransaccion , Descripcion FROM Historial " +
-                  "WHERE TipoTransaccion IS NOT NULL;", [], 
+                  "WHERE TipoTransaccion IS NOT NULL ORDER BY FechaYHora DESC;", [], 
             (err,result)=>{
                 if(err) {
                     console.log(err)
@@ -363,7 +363,8 @@ const router = app => {
                     "INNER JOIN Transferencias t ON h.Transferencia = t.idTransferencias " +
                     "INNER JOIN Acciones a ON t.Accion = a.idAcciones " +
                     "INNER JOIN Cuenta c ON t.CuentaOrigen = c.idCuenta " +
-                    "INNER JOIN Usuario u ON c.Propietario = u.idUsuario ", [], 
+                    "INNER JOIN Usuario u ON c.Propietario = u.idUsuario " +
+                    "ORDER BY h.FechaYHora DESC", [], 
            (err,result)=>{
                if(err) {
                    console.log(err)
