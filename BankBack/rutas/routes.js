@@ -177,6 +177,20 @@ const router = app => {
             });   
     })
 
+        //obtener listado de todas las cuentas amigas de una cuenta especifica
+        app.get('/api/v1/cuentaAmiga/:cuentaOrigen', async(req, res) => {
+            const cuentaOrigen = req.params.cuentaOrigen;
+             db.query("SELECT c.idCuenta , u.Nombre FROM Cuenta c INNER JOIN Usuario u ON c.Propietario = u.idUsuario WHERE c.idCuenta = ?", [cuentaOrigen], 
+                (err,result)=>{
+                    if(err) {
+                        console.log(err)
+                        result.sendStatus(404)
+                    } else {
+                        res.status(200).send(result);
+                    }
+                });   
+        })
+
     //*************  TABLA RELACIONESCUENTA  *******************/
 
     //crear relacioncuenta -- y viseversa la cuenta
@@ -213,6 +227,7 @@ const router = app => {
                 }
             });   
     })
+
    
     //*************  TABLA TRANSFERENCIAS  *******************/
 
@@ -340,23 +355,6 @@ const router = app => {
                     res.status(200).send(result);
                 }
             });   
-    })
-
-    //*************  obtener dueño y numero de cuenta  *******************/
-
-    app.get('/api/v1/:cuenta', async(req, res) => {
-        const cuenta = req.params.cuenta;
-
-        db.query("SELECT c.idCuenta, u.Nombre FROM Cuenta c INNER JOIN Usuario u ON c.Propietario = u.idUsuario " + 
-                 "WHERE c.idCuenta like '%?%'", [cuenta],
-                 (err,result)=>{
-                    if(err) {
-                        console.log(err);
-                        result.sendStatus(404)
-                    } else {
-                        res.status(200).send(result);
-                    }
-                });
     })
 
     //*************  NO ENCONTRO URL  *******************/
