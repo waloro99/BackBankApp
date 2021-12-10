@@ -149,9 +149,8 @@ const router = app => {
     //actualizar datos del cuenta --Modificar campos de las cuentas Origen y Destino
     app.put('/api/v1/cuenta/:idCuenta', async(req, res) => {
         const idCuenta = req.params.idCuenta;
-        const montoActual = req.body.montoActual;
         
-        db.query("UPDATE Cuenta SET MontoActual = ? WHERE idCuenta = ?",[montoActual,idCuenta], 
+        db.query("UPDATE Cuenta SET ? WHERE idCuenta = ?",[req.body,idCuenta], 
         (err,result)=>{
             if(err) {
                 console.log(err)
