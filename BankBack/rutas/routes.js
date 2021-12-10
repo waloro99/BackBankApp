@@ -339,6 +339,23 @@ const router = app => {
             });   
     })
 
+    //*************  obtener dueño y numero de cuenta  *******************/
+
+    app.get('/api/v1/:cuenta', async(req, res) => {
+        const cuenta = req.params.cuenta;
+
+        db.query("SELECT c.idCuenta, u.Nombre FROM Cuenta c INNER JOIN Usuario u ON c.Propietario = u.idUsuario " + 
+                 "WHERE c.idCuenta like '%?%'", [cuenta],
+                 (err,result)=>{
+                    if(err) {
+                        console.log(err);
+                        result.sendStatus(404)
+                    } else {
+                        res.status(200).send(result);
+                    }
+                });
+    })
+
     //*************  NO ENCONTRO URL  *******************/
 
     app.use(function(req, res, next) {
