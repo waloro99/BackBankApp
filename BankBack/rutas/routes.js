@@ -57,25 +57,16 @@ const router = app => {
 
     //actualizar datos del usuario --si desea cambiar el correo no se va poder tendriamos que agregar una nueva constante
     app.put('/api/v1/usuario/:Correo', async(req, res) => {
-
-        const correo = req.body.correo;
-        const contraseña = req.body.contraseña;
-        const rol = req.body.rol;
-        const disponible = req.body.disponible;
-        const direccion = req.body.direccion;
-        const dpi = req.body.dpi;
-        const fechaNacimiento = req.body.fechaNacimiento;
-        const nombre = req.body.nombre;
-        const telefono = req.body.telefono;
+        const Correo = req.params.Correo;
         
-        db.query("UPDATE Usuario SET Correo = ?, Contraseña = AES_ENCRYPT(?,?), Rol = ?, Disponible = ?, Direccion = ?, DPI = ?, FechaNacimiento = ?, Nombre = ?, Telefono = ? WHERE Correo = ?"
-                ,[correo,contraseña,process.env.DATABASE_CLAVE,rol,disponible,direccion,dpi,fechaNacimiento,nombre,telefono,correo], 
+        db.query("UPDATE Usuario SET ? WHERE Correo = ?",[req.body,Correo], 
         (err,result)=>{
             if(err) {
                 console.log(err)
                 result.sendStatus(404)
             } else {
                 console.log(result)
+                console.log(req.body)
                 res.sendStatus(204)
             }
         });
@@ -114,6 +105,21 @@ const router = app => {
         const correo = req.params.correo;
          db.query("SELECT idUsuario, Correo, CONVERT(AES_DECRYPT(Contraseña,?) USING utf8) as 'Contraseña', Rol, Disponible, Direccion, DPI, FechaNacimiento, Nombre, Telefono FROM Usuario WHERE Correo = ?;"
          , [process.env.DATABASE_CLAVE,correo], 
+            (err,result)=>{
+                if(err) {
+                    console.log(err);
+                    result.sendStatus(404)
+                } else {
+                    res.status(200).send(result);
+                }
+            });   
+    })
+
+    //obtiene informacion completa del usuario
+    app.get('/api/v1/usuarioInfo2/:nombre', async(req, res) => {
+        const nombre = req.params.nombre;
+         db.query("SELECT idUsuario, Correo, CONVERT(AES_DECRYPT(Contraseña,?) USING utf8) as 'Contraseña', Rol, Disponible, Direccion, DPI, FechaNacimiento, Nombre, Telefono FROM Usuario WHERE Nombre = ?;"
+         , [process.env.DATABASE_CLAVE,nombre], 
             (err,result)=>{
                 if(err) {
                     console.log(err);
