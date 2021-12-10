@@ -200,7 +200,10 @@ const router = app => {
     //obtener listado de cuentas amigas de una cuenta especifica
     app.get('/api/v1/relacionCuenta/:cuentaOrigen', async(req, res) => {
         const cuentaOrigen = req.params.cuentaOrigen;
-         db.query("SELECT CuentaDestino FROM RelacionesCuenta WHERE cuentaOrigen = ?", [cuentaOrigen], 
+         db.query("SELECT rc.CuentaDestino , u.Nombre FROM RelacionesCuenta rc " +
+                    "INNER JOIN Cuenta c ON rc.CuentaDestino = c.idCuenta " +
+                    "INNER JOIN Usuario u ON c.Propietario = u.idUsuario " +
+                    "WHERE cuentaOrigen = ?;", [cuentaOrigen], 
             (err,result)=>{
                 if(err) {
                     console.log(err)
